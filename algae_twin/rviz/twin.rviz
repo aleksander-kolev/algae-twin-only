@@ -1,0 +1,93 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Value: true
+    - Class: rviz_default_plugins/Map
+      Name: Map
+      Topic:
+        Value: /map
+        Durability Policy: Transient Local
+      Value: true
+    - Class: rviz_default_plugins/Map
+      Name: Keepout Mask
+      Color Scheme: Costmap
+      Topic:
+        Value: /keepout_mask
+        Durability Policy: Transient Local
+      Alpha: 0.4
+      Value: true
+    - Class: rviz_default_plugins/Map
+      Name: Global Costmap
+      Color Scheme: Costmap
+      Topic:
+        Value: /global_costmap/costmap
+        Durability Policy: Transient Local
+      Alpha: 0.5
+      Value: true
+    - Class: rviz_default_plugins/PoseWithCovariance
+      Name: Robot Pose (AMCL)
+      Topic:
+        Value: /amcl_pose
+        Durability Policy: Volatile
+      Color: 255; 85; 85
+      Axes Length: 0.4
+      Axes Radius: 0.05
+      Shape: Axes
+      Covariance:
+        Value: true
+        Position:
+          Alpha: 0.25
+          Color: 255; 180; 80
+      Value: true
+    - Class: rviz_default_plugins/LaserScan
+      Name: Real Scan
+      Topic:
+        Value: /scan
+        Reliability Policy: Best Effort
+      Color: 77; 163; 255
+      Size (m): 0.03
+      Style: Points
+      Value: true
+    - Class: rviz_default_plugins/LaserScan
+      Name: Twin Scan
+      Topic:
+        Value: /sim/scan
+        Reliability Policy: Best Effort
+      Color: 55; 224; 200
+      Size (m): 0.03
+      Style: Points
+      Value: true
+    - Class: rviz_default_plugins/Path
+      Name: Plan
+      Topic:
+        Value: /plan
+      Color: 227; 197; 103
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Show Names: true
+      Value: true
+  Global Options:
+    Background Color: 24; 28; 36
+    Fixed Frame: map
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/SetInitialPose
+      Topic:
+        Value: /initialpose
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 8
+      Pitch: 1.2
+      Yaw: 1.57
+Window Geometry:
+  Height: 800
+  Width: 1200

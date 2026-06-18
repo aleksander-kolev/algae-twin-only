@@ -1,0 +1,12 @@
+# keep the build context small + reproducible (the Dockerfile only COPYs algae_twin)
+.git
+.research
+docs
+scripts
+README.md
+**/__pycache__
+**/*.pyc
+**/build
+**/install
+**/log
+algae_twin/test

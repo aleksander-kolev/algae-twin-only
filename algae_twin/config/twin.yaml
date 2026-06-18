@@ -1,0 +1,86 @@
+# Parameters for the algae_twin nodes. Mode-dependent values (mode,
+# real_cmd_stamped, mirror_real, use_sim_time) are set by twin.launch.py.
+
+twin_bridge:
+  ros__parameters:
+    rate: 20.0
+    cmd_timeout: 0.6
+    max_lin: 0.22                 # burger hardware envelope, applied to both
+    max_ang: 2.84
+    map_to_world: [0.0, 0.0, 0.0] # map frame -> gazebo world frame offset
+    # front-cone collision safety-stop (real robot, twin mode): cut forward
+    # motion within stop_distance, hold until clear past release_distance for
+    # release_hold s, fail SAFE on a stale /scan. Rotation/reverse stay allowed.
+    safety_enable: true
+    safety_stop_distance: 0.25
+    safety_release_distance: 0.35
+    safety_release_hold: 0.3
+    safety_front_angle: 0.5       # half-cone (rad), ~ +/-29 deg
+    safety_scan_timeout: 0.5
+
+pose_sync:
+  ros__parameters:
+    rate: 10.0
+    kp_lin: 0.6
+    kp_ang: 1.2
+    max_corr_lin: 0.06            # shadow correction stays gentle:
+    max_corr_ang: 0.5             # the twin must MOVE like the real robot
+    deadband_lin: 0.02
+    deadband_ang: 0.05
+    teleport_divergence: 1.0      # beyond this (sustained) -> teleport twin
+    teleport_after: 2.0
+    teleport_cooldown: 5.0
+    model: "burger_twin"
+    world: "default"
+    map_to_world: [0.0, 0.0, 0.0]
+
+map_edit:
+  ros__parameters:
+    world: "default"
+    box_height: 0.25
+    persist: true
+    map_to_world: [0.0, 0.0, 0.0]  # map frame -> gazebo world (world == map)
+
+obstacle_mirror:
+  ros__parameters:
+    bin_size: 0.10
+    min_hits: 8
+    decay: 0.85
+    map_clearance: 0.12
+    edit_clearance: 0.25
+    self_clearance: 0.25
+    box_size: 0.20
+    max_range: 8.0                 # LDS-02 spec (real driver reports range_max=100)
+    max_divergence: 0.5            # skip mirroring when localization is lost
+    max_divergence_age: 2.0        # treat a stale divergence (pose_sync down) as lost
+    demote_enable: true
+    demote_after: 8.0              # retire a mirror no longer seen this long (s)
+    demote_range: 3.0             # only judge presence within this range (m)
+
+mission:
+  ros__parameters:
+    world: "default"
+    spin_turns: 3                 # cleaning = 3 full rotations
+    spin_time_allowance: 90.0
+    fallback_spin_speed: 1.2
+    battery_min_voltage: 11.3      # refuse below this (V); OpenCR cuts motors ~11.0 V
+    algae_radius: 0.15
+    home_pose: [0.0, 0.0, 0.0]
+    sprayer_speed: 25.0           # dispersal motor velocity (rad/s)
+    emitter_topic: "/sim/sprayer_particles"
+    cleared_linger_sec: 20.0
+    nav_timeout: 45.0              # cancel+fail a Nav2 goal stalled this long (s);
+    #                               keeps one unreachable goal from blocking the queue
+    placement_clearance: 0.25      # reject algae within this of a wall (m): the robot
+    #                               (0.105 m radius) must reach within goal tolerance,
+    #                               so a far-corner/near-wall click is rejected at
+    #                               placement instead of stalling the robot for nav_timeout
+    map_to_world: [0.0, 0.0, 0.0]  # map frame -> gazebo world (world == map)
+
+sim_battery:
+  ros__parameters:
+    initial_percent: 100.0
+    idle_drain: 0.01              # %/s
+    drain_per_meter: 0.10
+    drain_per_rad: 0.02
+    spray_drain: 0.08

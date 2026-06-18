@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>algae_twin</name>
+  <version>1.0.0</version>
+  <description>
+    TurtleBot3 Burger digital twin: one Nav2 brain drives the real robot and its
+    Gazebo twin in lockstep, with bidirectional world sync (keepout edits and
+    mirrored obstacles), algae-cleaning missions with a chemical dispersal motor,
+    battery monitoring and a browser operator UI (served from the Python stdlib).
+  </description>
+  <maintainer email="nkostovbusiness@gmail.com">Nikolay Kostov</maintainer>
+  <license>Apache-2.0</license>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>action_msgs</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+
+  <!-- navigation stack (one shared brain) -->
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_amcl</exec_depend>
+  <exec_depend>nav2_planner</exec_depend>
+  <exec_depend>nav2_controller</exec_depend>
+  <exec_depend>nav2_behaviors</exec_depend>
+  <exec_depend>nav2_bt_navigator</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+  <exec_depend>nav2_common</exec_depend>
+
+  <!-- simulation side -->
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>ros_gz_interfaces</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>turtlebot3_description</exec_depend>
+  <exec_depend>turtlebot3_gazebo</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <!-- launch tooling used by the .launch.py files -->
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ros2launch</exec_depend>
+
+  <!-- operator UI: a browser dashboard served from the Python stdlib (no GUI
+       library — neither python3-tk nor PyQt5 is needed) + optional RViz view -->
+  <exec_depend>rviz2</exec_depend>
+
+  <!-- real robot extras: the OpenCR /sound service type (the mission beeps the
+       real robot when dispersal starts/ends). -->
+  <exec_depend>turtlebot3_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

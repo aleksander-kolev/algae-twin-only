@@ -1,0 +1,24 @@
+# colcon / ROS build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# runtime logs / lab evidence
+algae_twin_logs/
+lab_logs/
+
+# editor / OS
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# local scratch / analysis
+_amcl_*.py
+*.tmp

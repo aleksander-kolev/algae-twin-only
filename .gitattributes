@@ -1,0 +1,11 @@
+# Force Unix (LF) line endings on everything that runs on Linux (the lab PC and
+# the Docker container) — a CRLF in a .sh breaks `#!/usr/bin/env bash` there.
+* text=auto eol=lf
+
+# Binary assets — never normalize.
+*.pgm binary
+*.png binary
+*.jpg binary
+*.stl binary
+*.dae binary
+*.pdf binary
