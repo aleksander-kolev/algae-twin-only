@@ -24,6 +24,9 @@ on the same `ROS_DOMAIN_ID`.
 > step‑by‑step "prove every link with `ros2`" cookbook are in
 > [`docs/REFERENCE.md`](docs/REFERENCE.md).** This README is the tour; that file
 > is the manual.
+>
+> **Going to the lab?** → [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — run steps,
+> fallbacks, and a fix‑it table.
 
 ---
 
