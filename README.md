@@ -27,6 +27,10 @@ on the same `ROS_DOMAIN_ID`.
 >
 > **Going to the lab?** → [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — run steps,
 > fallbacks, and a fix‑it table.
+>
+> **Recording the PoC demo?** → [`docs/DEMO.md`](docs/DEMO.md) — the three graded
+> Digital‑Twin usages mapped to scripts + a 2–3 min video sequence
+> (`scripts/proof/demo_rubric.sh` prints the live evidence).
 
 ---
 
