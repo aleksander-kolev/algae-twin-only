@@ -32,6 +32,10 @@ class ObstacleMirror(Node):
         self.declare_parameter('max_range', 8.0)        # LDS-02 spec (msg says 100)
         self.declare_parameter('max_divergence', 0.5)   # skip mirroring if lost
         self.declare_parameter('max_divergence_age', 2.0)  # stale sync == lost
+        self.declare_parameter('min_scan_match', 0.5)   # require this fraction of
+        #   returns to match the static map before mirroring; below it the AMCL
+        #   pose is wrong (not seeded / kidnapped) and EVERY return reads as an
+        #   "unmapped obstacle" -> phantom boxes. Gate it on the 2D Pose Estimate.
         self.declare_parameter('demote_enable', True)
         self.declare_parameter('demote_after', 8.0)     # retire unseen mirror (s)
         self.declare_parameter('demote_range', 3.0)     # judge presence within (m)
@@ -44,6 +48,7 @@ class ObstacleMirror(Node):
         self.div_t = 0.0          # monotonic stamp of the last /twin/divergence
         self.scan = None
         self.bins = {}
+        self._last_warn = 0.0     # throttle the "not localized" warning
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
@@ -78,6 +83,12 @@ class ObstacleMirror(Node):
 
     def _on_scan(self, msg):
         self.scan = msg
+
+    def _warn_throttled(self, msg, period=5.0):
+        now = time.monotonic()
+        if now - self._last_warn >= period:
+            self.get_logger().warning(msg)
+            self._last_warn = now
 
     def _robot_pose(self):
         try:
@@ -117,8 +128,10 @@ class ObstacleMirror(Node):
         # the sensor's real reach so far spurious returns can't mirror phantoms.
         max_range = min(scan.range_max, self.get_parameter('max_range').value)
 
-        # tally this scan's unexplained returns per detection bin
+        # tally this scan's unexplained returns per detection bin, and measure how
+        # much of the scan the static map explains (a LOCALIZATION check).
         hits = {}
+        total = explained = 0
         angle = scan.angle_min
         for i, rng in enumerate(scan.ranges):
             angle_i, angle = angle, angle + scan.angle_increment
@@ -126,12 +139,27 @@ class ObstacleMirror(Node):
             # exceeds range_min), and over-range returns
             if i % 2 or not (self_clear < rng < max_range):
                 continue
+            total += 1
             wx = px + rng * math.cos(pyaw + angle_i)
             wy = py + rng * math.sin(pyaw + angle_i)
             if self.static_map.occupied_near(wx, wy, map_clear):
+                explained += 1
                 continue   # explained by the base map
             key = (round(wx / bin_size), round(wy / bin_size))
             hits[key] = hits.get(key, 0.0) + 1.0
+
+        # LOCALIZATION GATE: if the static map explains too little of the scan, the
+        # AMCL pose is wrong (not seeded / kidnapped). EVERY return then reads as an
+        # "unmapped obstacle" and we'd spawn phantom boxes one-by-one all over the
+        # map. Refuse to mirror until the scan matches the map (operator did the 2D
+        # Pose Estimate). This is what stops phantom spawning before localization.
+        min_match = self.get_parameter('min_scan_match').value
+        if total > 0 and explained < min_match * total:
+            self._warn_throttled(
+                f'scan matches the map only {explained}/{total} '
+                f'(< {min_match:.0%}) — pose not localized; skipping mirror '
+                '(do the 2D Pose Estimate)')
+            return
 
         self._demote(px, py, hits, bin_size)
 

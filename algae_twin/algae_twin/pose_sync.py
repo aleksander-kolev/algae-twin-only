@@ -12,7 +12,7 @@ import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
-from std_msgs.msg import Bool, Float32
+from std_msgs.msg import Bool, Empty, Float32
 from tf2_ros import Buffer, TransformListener
 
 from .gz_io import GzIo
@@ -54,12 +54,15 @@ class PoseSync(Node):
         self.last_teleport = 0.0
         self.estop = False
         self.clean_active = False
+        self._resync_req = False     # operator pressed "Sync twin -> real"
 
         self.create_subscription(Odometry, '/sim/ground_truth',
                                  self._on_ground_truth, 10)
         self.create_subscription(Bool, '/estop', self._on_estop, latched_qos())
         self.create_subscription(Bool, '/clean/active', self._on_clean_active,
                                  latched_qos())
+        # manual resync: snap the twin onto the real robot now (UI button / topic)
+        self.create_subscription(Empty, '/twin/resync', self._on_resync, 10)
         self.corr_pub = self.create_publisher(Twist, '/twin/correction', 10)
         self.div_pub = self.create_publisher(Float32, '/twin/divergence', 10)
         self.create_timer(1.0 / p('rate'), self._tick)
@@ -67,6 +70,9 @@ class PoseSync(Node):
 
     def _on_estop(self, msg):
         self.estop = msg.data
+
+    def _on_resync(self, _msg):
+        self._resync_req = True
 
     def _on_clean_active(self, msg):
         self.clean_active = msg.data
@@ -92,6 +98,15 @@ class PoseSync(Node):
         return (t.x, t.y, quat_to_yaw(q.x, q.y, q.z, q.w))
 
     def _tick(self):
+        if self._resync_req:                  # operator pressed "Sync twin -> real"
+            self._resync_req = False
+            forced = self._real_pose()
+            if forced is not None:
+                self._force_teleport(*forced)
+            else:
+                self.get_logger().warning(
+                    'RESYNC ignored — real pose unknown; localize the robot first '
+                    '(2D Pose Estimate)')
         if self.estop:                        # E-STOP freezes the twin:
             self.corr_pub.publish(Twist())    # zero correction, no teleport
             return
@@ -138,6 +153,16 @@ class PoseSync(Node):
             self.gz.set_pose(self.model, wx, wy, wyaw, z=0.01)
             self.last_teleport = now
             self.diverged_since = None
+
+    def _force_teleport(self, rx, ry, ryaw):
+        """Operator-triggered "Sync twin -> real": snap the twin onto the real
+        robot NOW, bypassing the divergence threshold / cooldown that gate the
+        automatic teleport. Needs a known real pose (AMCL localized)."""
+        wx, wy, wyaw = map_to_world_pose(rx, ry, ryaw, self.map_to_world)
+        self.get_logger().warn('manual RESYNC — teleporting twin onto the real robot')
+        self.gz.set_pose(self.model, wx, wy, wyaw, z=0.01)
+        self.last_teleport = time.monotonic()
+        self.diverged_since = None
 
 
 def main(args=None):

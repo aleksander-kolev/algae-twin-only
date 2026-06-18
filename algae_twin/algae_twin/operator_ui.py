@@ -95,6 +95,7 @@ class RosLink:
             'goto': node.create_publisher(PoseStamped, '/mission/goto', 10),
             'home': node.create_publisher(Empty, '/mission/home', 10),
             'recharge': node.create_publisher(Float32, '/sim/battery/set', 10),
+            'resync': node.create_publisher(Empty, '/twin/resync', 10),
             'initialpose': node.create_publisher(
                 PoseWithCovarianceStamped, '/initialpose', 10),
         }
@@ -153,6 +154,11 @@ class RosLink:
         from std_msgs.msg import Empty
         with self._pub_lock:
             self._pub['home'].publish(Empty())
+
+    def resync_twin(self):
+        from std_msgs.msg import Empty
+        with self._pub_lock:
+            self._pub['resync'].publish(Empty())
 
     def recharge(self, percent=100.0):
         from std_msgs.msg import Float32
@@ -274,6 +280,8 @@ def dispatch_command(link, name, body):
         link.goto(_num(body['x']), _num(body['y']), _num(body['yaw']))
     elif name == 'home':
         link.go_home()
+    elif name == 'resync':
+        link.resync_twin()
     elif name == 'recharge':
         link.recharge(_num(body.get('percent', 100.0)))
     elif name == 'setpose':

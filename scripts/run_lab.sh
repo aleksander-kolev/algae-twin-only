@@ -22,7 +22,7 @@ MODE=twin
 DOMAIN="${ROS_DOMAIN_ID:-36}"        # lab robots use the sticker number (36)
 WS="${TB3_WS:-$HOME/turtlebot3_ws}"
 ROBOT_HOST="${ROBOT_HOST:-turtlebot@192.168.8.36}"
-RVIZ=false
+RVIZ=true              # lab needs RViz for the 2D Pose Estimate (--no-rviz to skip)
 HEADLESS=false
 UI=true
 PREFLIGHT=true
@@ -34,7 +34,7 @@ usage() { grep '^#' "$0" | sed 's/^# \{0,1\}//' | head -18; cat <<EOF
 flags:
   --domain N       ROS_DOMAIN_ID (default: $DOMAIN — the robot's sticker number)
   --ws PATH        TurtleBot3 workspace (default: $WS)
-  --rviz           also open RViz (2D Pose Estimate the classic way)
+  --no-rviz        don't open RViz (default: RViz opens for the 2D Pose Estimate)
   --headless       no Gazebo 3D window (weak GPU; UI/RViz still show all)
   --no-ui          skip the operator UI
   --keep-edits     restore keepout/obstacle edits from a previous session
@@ -49,6 +49,7 @@ while [ $# -gt 0 ]; do
     --domain) DOMAIN="$2"; shift ;;
     --ws) WS="$2"; shift ;;
     --rviz) RVIZ=true ;;
+    --no-rviz) RVIZ=false ;;
     --headless) HEADLESS=true ;;
     --no-ui) UI=false ;;
     --keep-edits) KEEP_EDITS=true ;;

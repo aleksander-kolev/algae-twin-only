@@ -53,6 +53,10 @@ obstacle_mirror:
     max_range: 8.0                 # LDS-02 spec (real driver reports range_max=100)
     max_divergence: 0.5            # skip mirroring when localization is lost
     max_divergence_age: 2.0        # treat a stale divergence (pose_sync down) as lost
+    min_scan_match: 0.5            # require >=50% of returns to match the static map
+    #                                before mirroring: below it AMCL isn't localized
+    #                                (no 2D Pose Estimate yet) and every return reads
+    #                                as an obstacle -> phantom boxes. Gates that out.
     demote_enable: true
     demote_after: 8.0              # retire a mirror no longer seen this long (s)
     demote_range: 3.0             # only judge presence within this range (m)

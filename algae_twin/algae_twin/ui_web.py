@@ -96,6 +96,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
     <h2>Controls</h2>
     <button id="estop">E-STOP</button>
     <button data-cmd="home">Return home</button>
+    <button data-cmd="resync">Sync twin → real</button>
     <button data-cmd="recharge">Recharge twin battery</button>
     <button data-cmd="clear-mirrored">Clear mirrored obstacles</button>
     <button data-cmd="clear-all">Clear all edits</button>
@@ -411,6 +412,7 @@ document.getElementById('estop').addEventListener('click',()=>{
 document.querySelectorAll('button[data-cmd]').forEach(b=> b.addEventListener('click',()=>{
   const k=b.dataset.cmd;
   if(k==='home') cmd('home');
+  else if(k==='resync') cmd('resync');
   else if(k==='recharge') cmd('recharge',{percent:100.0});
   else if(k==='clear-mirrored') cmd('clear_edits',{source:'mirrored'});
   else if(k==='clear-all') cmd('clear_edits',{source:'all'});
