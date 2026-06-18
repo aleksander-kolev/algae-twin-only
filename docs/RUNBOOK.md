@@ -41,8 +41,10 @@ cd algae-twin-only
 ```
 `run_lab.sh` does the rest: sources ROS + `~/turtlebot3_ws`, checks deps, copies
 `algae_twin` into `~/turtlebot3_ws/src`, `colcon build`s it, **verifies the
-robot's `/scan`**, launches, runs `preflight` ~40 s in. Useful flags:
-`--headless` (weak GPU), `--rviz`, `--domain N` (robot ≠ 36), `--ws PATH`,
+robot's `/scan`**, launches, runs `preflight` ~40 s in. It **starts with an empty
+world** — only the robot + twin come up; **you** place algae/obstacles during the
+demo. Useful flags: `--headless` (weak GPU), `--rviz`, `--domain N` (robot ≠ 36),
+`--ws PATH`, `--keep-edits` (restore last session's keepout/obstacle boxes),
 `--check-only` (verify the link, don't launch).
 
 ### 1c. Set robot pose (once, every run)

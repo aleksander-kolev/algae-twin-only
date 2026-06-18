@@ -27,6 +27,7 @@ HEADLESS=false
 UI=true
 PREFLIGHT=true
 CHECK_ONLY=false
+KEEP_EDITS=false      # default: start with an EMPTY world (you place algae/obstacles)
 
 usage() { grep '^#' "$0" | sed 's/^# \{0,1\}//' | head -18; cat <<EOF
 
@@ -36,6 +37,8 @@ flags:
   --rviz           also open RViz (2D Pose Estimate the classic way)
   --headless       no Gazebo 3D window (weak GPU; UI/RViz still show all)
   --no-ui          skip the operator UI
+  --keep-edits     restore keepout/obstacle edits from a previous session
+                   (default: start with an EMPTY world — you place objects)
   --no-preflight   skip the automatic link check after launch
   --check-only     verify machine + robot link and exit
 EOF
@@ -48,6 +51,7 @@ while [ $# -gt 0 ]; do
     --rviz) RVIZ=true ;;
     --headless) HEADLESS=true ;;
     --no-ui) UI=false ;;
+    --keep-edits) KEEP_EDITS=true ;;
     --no-preflight) PREFLIGHT=false ;;
     --check-only) CHECK_ONLY=true ;;
     -h|--help) usage ;;
@@ -142,6 +146,16 @@ fi
 if [ "$CHECK_ONLY" = true ]; then
   say "Check-only: machine is ready. Launch with: $0"
   exit 0
+fi
+
+# Start with an EMPTY world: map_edit restores keepout/obstacle edits persisted
+# from a previous session (~/.algae_twin/edits.json) on launch. Clear them so the
+# demo begins clean — YOU place algae + obstacles. (--keep-edits to restore.)
+if [ "$KEEP_EDITS" != true ]; then
+  rm -f "$HOME/.algae_twin/edits.json" "$HOME/.algae_twin/edits.json.tmp" 2>/dev/null || true
+  say "world starts EMPTY — persisted edits cleared (place objects yourself; --keep-edits to restore)"
+else
+  say "--keep-edits: restoring keepout/obstacle edits from the last session"
 fi
 
 LOG_DIR="$HOME/algae_twin_logs/$(date -u +%Y%m%d_%H%M%S)"
