@@ -8,9 +8,8 @@ twin shadows it: pose_sync keeps the two glued, the obstacle mirror keeps the
 digital world truthful, and the operator UI drives both. Everything runs on the
 wall clock; the real robot is the time authority.
 
-This is the twin-only build: there is no `mode` argument and no sim-only code
-path. (For a full hardware-free run with both robots emulated in Gazebo, use the
-parent project's scripts/twinsim runner.)
+This is the twin-only build: it always runs against the real robot — there is no
+`mode` argument and no sim-only / emulator code path.
 """
 import os
 

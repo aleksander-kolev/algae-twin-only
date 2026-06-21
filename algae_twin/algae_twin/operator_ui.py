@@ -235,13 +235,8 @@ class RosLink:
         node.create_subscription(String, '/edits/state', on_json('edits'),
                                  latched_qos())
         node.create_subscription(Path, '/plan', on_plan, 10)
+        # the real robot's lidar overlay (the twin always drives the real robot)
         node.create_subscription(LaserScan, '/scan', on_scan, sensor_qos())
-        node.create_subscription(
-            LaserScan, '/sim/scan',
-            lambda m: None
-            if (store.snapshot().get('status') or {}).get('mode') == 'twin'
-            else on_scan(m),
-            sensor_qos())
 
     def shutdown(self):
         self._executor.shutdown(timeout_sec=1.0)

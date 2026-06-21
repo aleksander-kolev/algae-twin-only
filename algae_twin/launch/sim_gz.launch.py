@@ -1,6 +1,7 @@
 """Gazebo side of the twin: world, twin robot, ros_gz bridge, state publisher.
 
-Included by twin.launch.py — the digital world runs in BOTH modes.
+Included by twin.launch.py — brings up the digital world that shadows the real
+robot (burger_twin + ros_gz bridge + the twin's robot_state_publisher).
 """
 import os
 
@@ -46,7 +47,7 @@ def generate_launch_description():
             'world', default_value=os.path.join(pkg_share, 'worlds',
                                                 'algae_world.sdf')),
         DeclareLaunchArgument('headless', default_value='false'),
-        DeclareLaunchArgument('use_sim_time', default_value='true'),
+        DeclareLaunchArgument('use_sim_time', default_value='false'),
         DeclareLaunchArgument('spawn_x', default_value='0.0'),
         DeclareLaunchArgument('spawn_y', default_value='0.0'),
         DeclareLaunchArgument('spawn_yaw', default_value='0.0'),

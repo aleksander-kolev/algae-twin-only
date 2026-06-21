@@ -139,8 +139,8 @@ if [ "$MODE" = twin ]; then
    2. laptop + robot on the lab Wi-Fi (AP2IRR10)?
    3. same ROS_DOMAIN_ID on both sides? (sticker number; this run: $DOMAIN — override: --domain N)
    4. same RMW_IMPLEMENTATION on both sides? (this run: $RMW_IMPLEMENTATION)
-   5. no robot today? this is the twin-only build — it needs the real robot
-      (for a hardware-free run, use the parent project's scripts/twinsim runner)."
+   5. no robot today? this build runs against the real robot only — there is no
+      hardware-free fallback in this repo."
   fi
 fi
 

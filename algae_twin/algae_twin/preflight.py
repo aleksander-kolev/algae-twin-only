@@ -86,51 +86,40 @@ def main(args=None):
         rclpy.spin_once(node, timeout_sec=0.2)
 
     mode = node.mode or 'unknown'
-    sim_only = mode == 'sim'
     nav_ok = ActionClient(node, NavigateToPose,
                           'navigate_to_pose').wait_for_server(timeout_sec=1.0)
-    base = 'sim/base_footprint' if sim_only else 'base_footprint'
-    loc_ok = node.tf_buffer.can_transform('map', base, rclpy.time.Time())
+    loc_ok = node.tf_buffer.can_transform('map', 'base_footprint',
+                                          rclpy.time.Time())
     cmd_types = {s.topic_type
                  for s in node.get_subscriptions_info_by_topic('/cmd_vel')}
     cmd_pub_count = len(node.get_publishers_info_by_topic('/cmd_vel'))
 
+    # every link is required — the twin always runs against the real robot.
     checks = [
-        # name, ok, detail, required?
-        ('status', node.counts.get('status', 0) > 2,
-         f'mode={mode}', True),
-        ('gazebo', node.counts.get('gazebo', 0) > 5, 'ground truth', True),
-        ('twin lidar', node.counts.get('twin lidar', 0) > 2, '/sim/scan', True),
-        ('mask', node.counts.get('mask', 0) >= 1, 'keepout pipeline', True),
-        ('nav2', nav_ok, 'navigate_to_pose server', True),
-        ('localization', loc_ok, f'map->{base}', True),
-        ('robot odom', node.counts.get('robot odom', 0) > 5, '/odom',
-         not sim_only),
-        ('robot lidar', node.counts.get('robot lidar', 0) > 2, '/scan',
-         not sim_only),
+        ('status', node.counts.get('status', 0) > 2, f'mode={mode}'),
+        ('gazebo', node.counts.get('gazebo', 0) > 5, 'ground truth'),
+        ('twin lidar', node.counts.get('twin lidar', 0) > 2, '/sim/scan'),
+        ('mask', node.counts.get('mask', 0) >= 1, 'keepout pipeline'),
+        ('nav2', nav_ok, 'navigate_to_pose server'),
+        ('localization', loc_ok, 'map->base_footprint'),
+        ('robot odom', node.counts.get('robot odom', 0) > 5, '/odom'),
+        ('robot lidar', node.counts.get('robot lidar', 0) > 2, '/scan'),
         ('battery', node.counts.get('battery', 0) > 2,
-         f'{node.battery:.1f} V' if node.battery is not None else '—',
-         not sim_only),
+         f'{node.battery:.1f} V' if node.battery is not None else '—'),
         ('cmd link', bool(cmd_types),
-         ' / '.join(t.rsplit("/", 1)[-1] for t in sorted(cmd_types)) or '—',
-         not sim_only),
-        ('cmd writer', cmd_pub_count == 1, f'{cmd_pub_count} publisher(s)',
-         not sim_only),
+         ' / '.join(t.rsplit("/", 1)[-1] for t in sorted(cmd_types)) or '—'),
+        ('cmd writer', cmd_pub_count == 1, f'{cmd_pub_count} publisher(s)'),
     ]
 
     failed = 0
     print(f'\nAlgae Twin preflight ({mode} mode)')
     print('-' * 58)
-    for name, ok, detail, required in checks:
-        if ok:
-            mark = 'OK  '
-        elif required:
-            mark = 'FAIL'
+    for name, ok, detail in checks:
+        mark = 'OK  ' if ok else 'FAIL'
+        if not ok:
             failed += 1
-        else:
-            mark = 'skip'
         line = f'  {mark}  {name:<13} {detail}'
-        if not ok and required:
+        if not ok:
             line += f'\n        hint: {HINTS[name]}'
         print(line)
     print('-' * 58)

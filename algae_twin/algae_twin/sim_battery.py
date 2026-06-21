@@ -1,8 +1,9 @@
 """Battery model for the digital twin.
 
-Twin mode: mirrors the real robot's battery (a twin reports the real state).
-Sim mode (or real battery silent): simulates discharge from motion + sprayer
-load. The operator can reset the simulated charge via /sim/battery/set.
+Mirrors the real robot's battery (a twin reports the real pack's state). If the
+real battery goes silent, it falls back to a simple discharge model from motion +
+sprayer load so the twin gauge keeps moving; the operator can reset the simulated
+charge via /sim/battery/set.
 """
 import time
 
