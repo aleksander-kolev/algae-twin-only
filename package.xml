@@ -9,7 +9,7 @@
     mirrored obstacles), algae-cleaning missions with a chemical dispersal motor,
     battery monitoring and a browser operator UI (served from the Python stdlib).
   </description>
-  <maintainer email="nkostovbusiness@gmail.com">Nikolay Kostov</maintainer>
+  <maintainer email="aleksanderkolev01@gmail.com">Aleksandar Kolev</maintainer>
   <license>Apache-2.0</license>
 
   <exec_depend>rclpy</exec_depend>

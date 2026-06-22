@@ -20,8 +20,8 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='Nikolay Kostov',
-    maintainer_email='nkostovbusiness@gmail.com',
+    maintainer='Aleksandar Kolev',
+    maintainer_email='aleksanderkolev01@gmail.com',
     description='TurtleBot3 Burger digital twin (twin-only build): one Nav2 brain '
                 'drives the real robot and its Gazebo twin in lockstep.',
     license='Apache-2.0',
