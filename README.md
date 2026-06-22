@@ -36,6 +36,5 @@ RViz *2D Pose Estimate*), then place algae / block paths / E‑STOP from the das
 
 - Robot and PC need the same `ROS_DOMAIN_ID` and `RMW_IMPLEMENTATION=rmw_fastrtps_cpp`.
 - Use `headless:=true` without a GPU (software GL starves Nav2's control loop).
-- Tests: `python test/test_operator_ui_smoke.py` (no ROS); `test_util.py`, `test_imports.py` (ROS sourced).
 
 License: Apache‑2.0.
